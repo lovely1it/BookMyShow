@@ -1,0 +1,127 @@
+Please go through below description of APIs to understand how to use them
+
+1) adding movies to movie model done by admin
+app.post('/movie', movieTheatreController.addMovie);
+input: {
+	"name": "jabariya jodi",
+	"releaseDate": "20-jan-2020",
+	"language":" Hindi"
+}
+output: { added movie};
+
+//2) adding Theatre to theatre model done by admin
+app.post('/theatre', movieTheatreController.addTheatre);
+
+input-description : each theatre will be having multiple screens so adding screens in screen model here only.
+                   -> each screen is having fixed number of seats which is 50 
+
+input:{
+	"theatre": { "name":"Kormangala PVR" , "address": "kormangala 6 block, bangalore"},
+	"screen": [ { "name": "audi1"}, { "name": "audi2"}, { "name": "audi3"}, { "name": "audi4"}, { "name": "audi5"}]
+}
+
+output: { theatre and screen added successfuly}.
+
+//3) assignment of movies in theatre done by admin in Mapping model
+app.post('/assign', movieTheatreController.assignMovies);
+
+Input-description: -> To movie in a theatre theatreId, movieId, screenId and slots are needed.
+                    -> and assign all of them to Mapping model.
+Input:   [ 
+	 {
+		"theatreId": "The1587042011558",
+		"movieId": "mov1586999506204",
+		"screenId": "Scr15870420115591",
+		"slot": [ {"startTime": "8:00 AM", "endTime": "10:30 AM" },
+		{"startTime": "11:00 AM", "endTime": "1:30 PM" },
+		{"startTime": "2:30 PM", "endTime": "5:00 PM" }
+	]
+	},
+	 {
+		"theatreId": "The1587042011558",
+		"movieId": "mov1586999601627",
+		"screenId": "Scr15870420115632",
+		"slot": [ {"startTime": "8:00 AM", "endTime": "10:30 AM" },
+			{"startTime": "11:00 AM", "endTime": "1:30 PM" }
+		]
+	}
+];
+output:- { assignment done successfully !}     
+
+
+//4) update slots of movie in theatre done by admin
+app.post('/updateslots', movieTheatreController.updateMoviesSlots);
+
+Input-description: -> admin can update slots of movies in a theatre on a particular screen 
+
+Input- {
+		"theatreId": "The1587042011558",
+		"movieId": "mov1586999633587",
+		"screenId": "Scr15870420115654",
+		"slot": [ {"startTime": "8:00 AM", "endTime": "10:30 AM" }
+		]
+	}
+ output: { slots of movies will be updated successfully }   
+
+
+ //5) book ticket API will be used by user to book movie ticket
+app.post('/bookticket', movieTheatreController.bookMovieTicket );
+
+Input-Description: theatreId, movieId, screenId and noOfSeat will be needed to book the ticket for a movie .
+                   -> slotId:- value will be any integer from these 0,1,2,3,4 
+                   "slot": [0-index  {"startTime": "8:00 AM", "endTime": "10:30 AM" },
+		                   1-index  {"startTime": "11:00 AM", "endTime": "1:30 PM" },
+		                   2- index {"startTime": "2:30 PM", "endTime": "5:00 PM" },
+                           3-index {"startTime": "6:00 PM", "endTime": "8:30 PM" },
+		                4-index {"startTime": "9:30 PM", "endTime": "12:00 PM" }
+	                    ]
+                        -> user will be aware of slots that which movie is getting played on which slot and will give specific slot to book ticket
+                        -> so using slotId as number becomes easy to book ticket
+Input:{
+    	"theatreId": "The1587097216106",
+		"movieId": "mov1586999506204",
+		"screenId": "Scr15870972161061",
+        "slotId":0,
+        "noOfSeat":5
+        
+	}
+output: { Ticket will be booked successfully if it's available if not available then will throw message }
+
+//6) getting all booked seats and available seats for a movie in a theatre done by admin at any particular time
+app.get('/bookedseatlist', movieTheatreController.getBooketAndAvailableSeats);
+
+Input-Description: theatreId and movieId will be needed to check how many booked and available seats are present.
+                -> outputData will be  "data": {
+                                                "theatreName": "IMAX Lido",
+                                                "movieName": "War",
+                                                "availableSeat": 95,
+                                                "bookedSeat": 5
+                                            }
+
+Input: {
+	"theatreId": "The1587042011558",
+		"movieId": "mov1586999601627"
+        
+	}
+   output: {
+       {
+    "status": "success",
+    "data": {
+        "theatreName": "IMAX Lido",
+        "movieName": "War",
+        "availableSeat": 95,
+        "bookedSeat": 5
+    }
+    }
+   }
+
+   //7) getting all theatre searched by movie and vice versa done by user
+app.get('/list/?:id', movieTheatreController.searchMovieAndTheatre);
+
+Input-Description :- if input is theatreId then all movies being palyed in that theatre will be listed.
+                    ->if input is movieId then all the theatre will be listed in which movie is being palyed.
+
+
+Input{ '/list/?:movieId' or /list/?:theatreId'}
+
+output: { list of movie or list of theatre will be listed based in input};
